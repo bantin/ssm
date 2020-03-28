@@ -74,6 +74,7 @@ class SLDS(object):
             none=obs.GaussianObservations,
             gaussian=obs.AutoRegressiveObservations,
             diagonal_gaussian=obs.AutoRegressiveDiagonalNoiseObservations,
+            rotational=obs.AutoRegressiveRotationalObservations,
             t=obs.RobustAutoRegressiveObservations,
             studentst=obs.RobustAutoRegressiveObservations,
             diagonal_t=obs.RobustAutoRegressiveDiagonalNoiseObservations,
@@ -577,12 +578,12 @@ class SLDS(object):
                       masks=xmasks,
                       tags=tags
         )
-        exact_m_step_dynamics = [
-           obs.AutoRegressiveObservations,
-           obs.AutoRegressiveObservationsNoInput,
-           obs.AutoRegressiveDiagonalNoiseObservations, 
-        ]
-        if type(self.dynamics) in exact_m_step_dynamics and self.dynamics.lags == 1:
+        exact_m_step_observation_models = (
+            obs.AutoRegressiveObservations,
+            obs.AutoRegressiveObservationsNoInput,
+            obs.AutoRegressiveDiagonalNoiseObservations
+        )
+        if isinstance(self.dynamics, exact_m_step_observation_models) and self.dynamics.lags == 1:
             # In this case, we can do an exact M-step on the dynamics by passing
             # in the true sufficient statistics for the continuous state.
             kwargs["continuous_expectations"] = variational_posterior.continuous_expectations
@@ -808,6 +809,7 @@ class LDS(SLDS):
             none=obs.GaussianObservations,
             gaussian=obs.AutoRegressiveObservations,
             diagonal_gaussian=obs.AutoRegressiveDiagonalNoiseObservations,
+            rotational=obs.AutoRegressiveRotationalObservations,
             t=obs.RobustAutoRegressiveObservations,
             studentst=obs.RobustAutoRegressiveObservations,
             diagonal_t=obs.RobustAutoRegressiveDiagonalNoiseObservations,
